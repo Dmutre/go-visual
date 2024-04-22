@@ -139,7 +139,7 @@ func (pw *Visualizer) drawDefaultUI() {
     pw.sz.HeightPx = 800;
 
     // Define the center of the figure.
-	cx := 400
+		cx := 400
     cy := 400
 
     // Define the size of the figure.
