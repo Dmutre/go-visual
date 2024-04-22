@@ -32,8 +32,8 @@ type Visualizer struct {
 func (pw *Visualizer) Main() {
 	pw.tx = make(chan screen.Texture)
 	pw.done = make(chan struct{})
-	pw.pos.Max.X = 200
-	pw.pos.Max.Y = 200
+	pw.pos.Max.X = 800
+	pw.pos.Max.Y = 800
 	driver.Main(pw.run)
 }
 
@@ -44,6 +44,8 @@ func (pw *Visualizer) Update(t screen.Texture) {
 func (pw *Visualizer) run(s screen.Screen) {
 	w, err := s.NewWindow(&screen.NewWindowOptions{
 		Title: pw.Title,
+		Width: pw.pos.Max.X,
+		Height: pw.pos.Max.Y,
 	})
 	if err != nil {
 		log.Fatal("Failed to initialize the app window:", err)
@@ -131,12 +133,31 @@ func (pw *Visualizer) handleEvent(e any, t screen.Texture) {
 }
 
 func (pw *Visualizer) drawDefaultUI() {
-	pw.w.Fill(pw.sz.Bounds(), color.Black, draw.Src) // Фон.
+	pw.w.Fill(pw.sz.Bounds(), color.White, draw.Src) // Background.
 
-	// TODO: Змінити колір фону та додати відображення фігури у вашому варіанті.
+    pw.sz.WidthPx = 800;
+    pw.sz.HeightPx = 800;
 
-	// Малювання білої рамки.
-	for _, br := range imageutil.Border(pw.sz.Bounds(), 10) {
-		pw.w.Fill(br, color.White, draw.Src)
-	}
+    // Define the center of the figure.
+	cx := 400
+    cy := 400
+
+    // Define the size of the figure.
+    verticalWidth := 150
+    verticalHeight := 400
+    horizontalWidth := 400
+    horizontalHeight := 150
+
+    // Create two rectangles that intersect at the center.
+    verticalRect := image.Rect(cx-verticalWidth/2, cy-verticalHeight/2, cx+verticalWidth/2, cy+verticalHeight/2)
+    horizontalRect := image.Rect(cx-horizontalWidth/2, cy-horizontalHeight/2, cx+horizontalWidth/2, cy+horizontalHeight/2)
+
+    // Draw the rectangles with the desired color.
+    pw.w.Fill(verticalRect, color.RGBA{R: 0xff, A: 0xff}, draw.Src)
+    pw.w.Fill(horizontalRect, color.RGBA{R: 0xff, A: 0xff}, draw.Src)
+
+    // Draw a white border.
+    for _, br := range imageutil.Border(pw.sz.Bounds(), 10) {
+        pw.w.Fill(br, color.White, draw.Src)
+    }
 }
