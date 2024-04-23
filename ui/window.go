@@ -108,16 +108,13 @@ func detectTerminate(e any) bool {
 
 func (pw *Visualizer) handleEvent(e any, t screen.Texture) {
 	switch e := e.(type) {
-
-	case size.Event: // Оновлення даних про розмір вікна.
-		pw.sz = e
-
-	case error:
-		log.Printf("ERROR: %s", e)
-
 	case mouse.Event:
-		if t == nil {
-			// TODO: Реалізувати реакцію на натискання кнопки миші.
+		if e.Button == mouse.ButtonLeft && e.Direction == mouse.DirPress {
+			// Перетворення значень X та Y на цілі числа.
+			x := int(e.X)
+			y := int(e.Y)
+			// Переміщення хрестика до позиції миші.
+			pw.moveCrosshair(image.Point{X: x, Y: y})
 		}
 
 	case paint.Event:
@@ -131,6 +128,31 @@ func (pw *Visualizer) handleEvent(e any, t screen.Texture) {
 		pw.w.Publish()
 	}
 }
+
+func (pw *Visualizer) moveCrosshair(pos image.Point) {
+	// Визначення нових координат центра хрестика.
+	pw.pos.Max.X = pos.X
+	pw.pos.Max.Y = pos.Y
+
+	// Перемалювання вікна з новими координатами хрестика.
+	pw.w.Fill(pw.sz.Bounds(), color.White, draw.Src) // Background.
+	pw.drawCrosshair()
+}
+
+func (pw *Visualizer) drawCrosshair() {
+	// Розміри хрестика.
+	width := 150
+	height := 400
+
+	// Визначення позицій вертикального та горизонтального прямокутників.
+	verticalRect := image.Rect(pw.pos.Max.X-width/2, pw.pos.Max.Y-height/2, pw.pos.Max.X+width/2, pw.pos.Max.Y+height/2)
+	horizontalRect := image.Rect(pw.pos.Max.X-height/2, pw.pos.Max.Y-width/2, pw.pos.Max.X+height/2, pw.pos.Max.Y+width/2)
+
+	// Малювання прямокутників.
+	pw.w.Fill(verticalRect, color.RGBA{R: 0xff, A: 0xff}, draw.Src)
+	pw.w.Fill(horizontalRect, color.RGBA{R: 0xff, A: 0xff}, draw.Src)
+}
+
 
 func (pw *Visualizer) drawDefaultUI() {
 	pw.w.Fill(pw.sz.Bounds(), color.White, draw.Src) // Background.
