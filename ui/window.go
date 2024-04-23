@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"golang.org/x/exp/shiny/driver"
-	"golang.org/x/exp/shiny/imageutil"
+	//"golang.org/x/exp/shiny/imageutil"
 	"golang.org/x/exp/shiny/screen"
 	"golang.org/x/image/draw"
 	"golang.org/x/mobile/event/key"
@@ -27,6 +27,8 @@ type Visualizer struct {
 
 	sz  size.Event
 	pos image.Rectangle
+
+	point func(x, y int) image.Point
 }
 
 func (pw *Visualizer) Main() {
@@ -34,6 +36,7 @@ func (pw *Visualizer) Main() {
 	pw.done = make(chan struct{})
 	pw.pos.Max.X = 800
 	pw.pos.Max.Y = 800
+	pw.point = createPoint()
 	driver.Main(pw.run)
 }
 
@@ -106,6 +109,18 @@ func detectTerminate(e any) bool {
 	return false
 }
 
+func createPoint() func(x, y int) image.Point {
+	var pointX = 400
+	var pointY = 400
+	return func(x, y int) image.Point {
+			if x != 0 && y != 0 {
+					pointX = x
+					pointY = y
+			}
+			return image.Point{X: pointX, Y: pointY}
+	}
+}
+
 func (pw *Visualizer) handleEvent(e any, t screen.Texture) {
 	switch e := e.(type) {
 	case mouse.Event:
@@ -114,13 +129,13 @@ func (pw *Visualizer) handleEvent(e any, t screen.Texture) {
 			x := int(e.X)
 			y := int(e.Y)
 			// Переміщення хрестика до позиції миші.
-			pw.moveCrosshair(image.Point{X: x, Y: y})
+			pw.moveCrosshair(pw.point(x, y))
 		}
 
 	case paint.Event:
 		// Малювання контенту вікна.
 		if t == nil {
-			pw.drawDefaultUI()
+			pw.moveCrosshair(pw.point(0, 0))
 		} else {
 			// Використання текстури отриманої через виклик Update.
 			pw.w.Scale(pw.sz.Bounds(), t, t.Bounds(), draw.Src, nil)
@@ -134,8 +149,12 @@ func (pw *Visualizer) moveCrosshair(pos image.Point) {
 	pw.pos.Max.X = pos.X
 	pw.pos.Max.Y = pos.Y
 
+	pw.sz.WidthPx = 800;
+	pw.sz.HeightPx = 800;
+
+	pw.w.Fill(pw.sz.Bounds(), color.White, draw.Src)
+
 	// Перемалювання вікна з новими координатами хрестика.
-	pw.w.Fill(pw.sz.Bounds(), color.White, draw.Src) // Background.
 	pw.drawCrosshair()
 }
 
@@ -151,35 +170,4 @@ func (pw *Visualizer) drawCrosshair() {
 	// Малювання прямокутників.
 	pw.w.Fill(verticalRect, color.RGBA{R: 0xff, A: 0xff}, draw.Src)
 	pw.w.Fill(horizontalRect, color.RGBA{R: 0xff, A: 0xff}, draw.Src)
-}
-
-
-func (pw *Visualizer) drawDefaultUI() {
-	pw.w.Fill(pw.sz.Bounds(), color.White, draw.Src) // Background.
-
-    pw.sz.WidthPx = 800;
-    pw.sz.HeightPx = 800;
-
-    // Define the center of the figure.
-		cx := 400
-    cy := 400
-
-    // Define the size of the figure.
-    verticalWidth := 150
-    verticalHeight := 400
-    horizontalWidth := 400
-    horizontalHeight := 150
-
-    // Create two rectangles that intersect at the center.
-    verticalRect := image.Rect(cx-verticalWidth/2, cy-verticalHeight/2, cx+verticalWidth/2, cy+verticalHeight/2)
-    horizontalRect := image.Rect(cx-horizontalWidth/2, cy-horizontalHeight/2, cx+horizontalWidth/2, cy+horizontalHeight/2)
-
-    // Draw the rectangles with the desired color.
-    pw.w.Fill(verticalRect, color.RGBA{R: 0xff, A: 0xff}, draw.Src)
-    pw.w.Fill(horizontalRect, color.RGBA{R: 0xff, A: 0xff}, draw.Src)
-
-    // Draw a white border.
-    for _, br := range imageutil.Border(pw.sz.Bounds(), 10) {
-        pw.w.Fill(br, color.White, draw.Src)
-    }
 }
