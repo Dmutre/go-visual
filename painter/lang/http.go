@@ -1,7 +1,9 @@
 package lang
 
 import (
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -14,9 +16,11 @@ import (
 func HttpHandler(loop *painter.Loop, p *Parser) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		var in io.Reader = r.Body
+		bodyBytes, err := ioutil.ReadAll(in)
 		if r.Method == http.MethodGet {
 			in = strings.NewReader(r.URL.Query().Get("cmd"))
 		}
+		fmt.Println(string(bodyBytes))
 
 		cmds, err := p.Parse(in)
 		if err != nil {
