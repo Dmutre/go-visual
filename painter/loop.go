@@ -39,7 +39,7 @@ func (l *Loop) Start(s screen.Screen) {
 	l.buffer, _ = s.NewTexture(size)
 	l.stop = make(chan struct{})
 	l.state = State{
-		background: color.Black,
+		background: color.White,
 		bgRect:     [2]image.Point{{0, 0}, {0, 0}},
 		crosses:    []*ui.Cross{},
 	}
