@@ -2,7 +2,6 @@ package lang
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"strings"
 
@@ -19,7 +18,6 @@ func complexOperation(operation painter.OperationFunc) painter.Operation {
 }
 
 func (p *Parser) CommandParser(commandName string, args []string) painter.Operation {
-	fmt.Println(commandName, args)
 	switch commandName {
 	case "white":
 		return painter.OperationFunc(painter.WhiteFill)
