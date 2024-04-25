@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/Dmutre/go-visual/painter"
 	"github.com/Dmutre/go-visual/painter/lang"
@@ -27,7 +28,8 @@ func main() {
 		http.Handle("/", lang.HttpHandler(&opLoop, &parser))
 		_ = http.ListenAndServe("localhost:17000", nil)
 	}()
-
-	pv.Main()
+	if os.Getenv("CI") != "true" {
+		pv.Main()
+	}
 	opLoop.StopAndWait()
 }
