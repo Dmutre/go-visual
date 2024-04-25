@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"os"
-	"testing"
 	"time"
 
 	"github.com/Dmutre/go-visual/painter"
@@ -36,13 +35,6 @@ func main() {
         go func() {
             // Wait for the event loop to start
             time.Sleep(time.Second)
-
-            // Run the tests
-            os.Args = []string{"go", "test", "./painter/loop_test.go", "./painter/lang/parser_test.go"}
-            testing.Main(func(pat, str string) (bool, error) { return true, nil },
-                []testing.InternalTest{},
-                []testing.InternalBenchmark{},
-                []testing.InternalExample{})
             
             // Stop the event loop when the tests are done
             opLoop.StopAndWait()
