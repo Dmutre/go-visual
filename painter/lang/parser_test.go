@@ -57,7 +57,6 @@ func TestParser_CommandParser(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			fmt.Println(test.commandName)
 			result := p.CommandParser(test.commandName, test.args)
-			t.Errorf("Testing Errors")
 			if result == nil {
 				t.Errorf("Expected non-nil result for command %s", test.commandName)
 			}
