@@ -27,3 +27,6 @@ jobs:
         run: go run cmd/painter/main.go
         env:
           CI: true
+
+      - name: Run all tests
+        run: go test ./...
