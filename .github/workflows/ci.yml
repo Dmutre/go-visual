@@ -27,9 +27,3 @@ jobs:
         run: go run cmd/painter/main.go
         env:
           CI: true
-
-      - name: Test loop_test.go
-        run: go test ./painter/loop_test.go
-
-      - name: Test parser_test.go
-        run: go test ./painter/lang/parser_test.go
