@@ -49,7 +49,7 @@ func main() {
         }()
 
         // Start the event loop
-        pv.Main()
+        // pv.Main()
     } else {
         // If not in CI, just start the event loop
         pv.Main()
