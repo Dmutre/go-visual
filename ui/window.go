@@ -19,7 +19,7 @@ import (
 type Cross struct {
 	x    int
 	y    int
-	size int
+	h int
 	w    int
 }
 
@@ -27,7 +27,7 @@ func NewCross(nx int, ny int) *Cross {
 	c := Cross{}
 	c.x = nx
 	c.y = ny
-	c.size = 400
+	c.h = 400
 	c.w = 150
 	return &c
 }
@@ -35,34 +35,34 @@ func NewCross(nx int, ny int) *Cross {
 func (c *Cross) DrawCross(t screen.Texture) {
 	x1 := c.x - c.w/2
 	x2 := c.x + c.w/2
-	y1 := c.y - c.size/2
-	y2 := c.y + c.size/2
+	y1 := c.y - c.h/2
+	y2 := c.y + c.h/2
 
 	t.Fill(image.Rect(x1, y1, x2, y2), color.RGBA{R: 0xff, A: 0xff}, draw.Src)
 
-	x1 = c.x - c.size/2
-	x2 = c.x + c.size/2
+	x1 = c.x - c.h/2
+	x2 = c.x + c.h/2
 	y1 = c.y - c.w/2
 	y2 = c.y + c.w/2
 	t.Fill(image.Rect(x1, y1, x2, y2), color.RGBA{R: 0xff, A: 0xff}, draw.Src)
 }
 
 func (c *Cross) drawCross(pw *Visualizer) {
-	x1 := c.x + c.size
-	y1 := c.y + c.size/2 + c.w/2
-	y2 := c.y + c.size/2 - c.w/2
+	x1 := c.x + c.h
+	y1 := c.y + c.h/2 + c.w/2
+	y2 := c.y + c.h/2 - c.w/2
 
 	pw.w.Fill(image.Rect(c.x, y1, x1, y2), color.RGBA{R: 0xff, A: 0xff}, draw.Src)
 
-	x1 = c.x + c.size/2 + c.w/2
-	x2 := c.x + c.size/2 - c.w/2
-	y2 = c.y + c.size
+	x1 = c.x + c.h/2 + c.w/2
+	x2 := c.x + c.h/2 - c.w/2
+	y2 = c.y + c.h
 	pw.w.Fill(image.Rect(x1, c.y, x2, y2), color.RGBA{R: 0xff, A: 0xff}, draw.Src)
 }
 
 func (c *Cross) move(x, y int) {
-	c.x = (x - c.size/2)
-	c.y = (y - c.size/2)
+	c.x = (x - c.h/2)
+	c.y = (y - c.h/2)
 }
 
 type Visualizer struct {

@@ -10,27 +10,6 @@ import (
 	"golang.org/x/exp/shiny/screen"
 )
 
-func getCordsByArgs(width int, height int, floatArgs []float64) ([]int, error) {
-	if len(floatArgs)%2 != 0 {
-		return nil, fmt.Errorf("invalid arg count")
-	}
-
-	cords := make([]int, len(floatArgs))
-
-	fWidth := float64(width)
-	fHeight := float64(height)
-
-	for index := range floatArgs {
-		if index%2 == 0 {
-			cords[index] = int(fWidth * floatArgs[index])
-		} else {
-			cords[index] = int(fHeight * floatArgs[index])
-		}
-	}
-
-	return cords, nil
-}
-
 func convertArgs(args []string) ([]float64, error) {
 	parsedValues := make([]float64, len(args))
 	for i, str := range args {
@@ -47,9 +26,9 @@ type Operation interface {
 	Do(t screen.Texture, state *State) (ready bool)
 }
 
-type OperationList []Operation
+type CommandList []Operation
 
-func (ol OperationList) Do(t screen.Texture, state *State) (ready bool) {
+func (ol CommandList) Do(t screen.Texture, state *State) (ready bool) {
 	for _, o := range ol {
 		ready = o.Do(t, state) || ready
 	}
@@ -105,7 +84,7 @@ func DrawRectangle(args []string) OperationFunc {
 		return nil
 	}
 	return func(t screen.Texture, state *State) {
-		cords, err := getCordsByArgs(t.Bounds().Dx(), t.Bounds().Dy(), floatArgs)
+		cords, err := convertArgsToCorodrinates(t.Bounds().Dx(), t.Bounds().Dy(), floatArgs)
 		if err == nil && len(cords) == 4 {
 			state.bgRect[0] = image.Point{int(cords[0]), int(cords[1])}
 			state.bgRect[1] = image.Point{int(cords[2]), int(cords[3])}
@@ -115,7 +94,7 @@ func DrawRectangle(args []string) OperationFunc {
 
 func Figure(args []string) OperationFunc {
 	if len(args) != 2 {
-		fmt.Println("Wrong amount of arguments to move figures")
+		fmt.Println("Wrong amount of arguments to draw figures")
 		return nil
 	}
 	floatArgs, err := convertArgs(args)
@@ -124,7 +103,7 @@ func Figure(args []string) OperationFunc {
 		return nil
 	}
 	return func(t screen.Texture, state *State) {
-		cords, err := getCordsByArgs(t.Bounds().Dx(), t.Bounds().Dy(), floatArgs)
+		cords, err := convertArgsToCorodrinates(t.Bounds().Dx(), t.Bounds().Dy(), floatArgs)
 		if err == nil && len(cords) == 2 {
 			cross := ui.NewCross(cords[0], cords[1])
 			state.crosses = append(state.crosses, cross)
@@ -143,10 +122,31 @@ func Move(args []string) OperationFunc {
 		return nil
 	}
 	return func(t screen.Texture, state *State) {
-		cords, err := getCordsByArgs(t.Bounds().Dx(), t.Bounds().Dy(), floatArgs)
+		cords, err := convertArgsToCorodrinates(t.Bounds().Dx(), t.Bounds().Dy(), floatArgs)
 		if err == nil && len(cords) == 2 {
 			cross := ui.NewCross(cords[0], cords[1])
 			state.crosses = []*ui.Cross{cross}
 		}
 	}
+}
+
+func convertArgsToCorodrinates(width int, height int, floatArgs []float64) ([]int, error) {
+	if len(floatArgs)%2 != 0 {
+		return nil, fmt.Errorf("invalid arg count")
+	}
+
+	cords := make([]int, len(floatArgs))
+
+	fWidth := float64(width)
+	fHeight := float64(height)
+
+	for index := range floatArgs {
+		if index%2 == 0 {
+			cords[index] = int(fWidth * floatArgs[index])
+		} else {
+			cords[index] = int(fHeight * floatArgs[index])
+		}
+	}
+
+	return cords, nil
 }

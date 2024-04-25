@@ -25,10 +25,10 @@ func (p *Parser) CommandParser(commandName string, args []string) painter.Operat
 		return painter.OperationFunc(painter.GreenFill)
 	case "bgrect":
 		return complexOperation(painter.DrawRectangle(args))
-	case "move":
-		return complexOperation(painter.Move(args))
 	case "figure":
 		return complexOperation(painter.Figure(args))
+	case "move":
+		return complexOperation(painter.Move(args))
 	case "update":
 		return painter.UpdateOp
 	case "reset":
