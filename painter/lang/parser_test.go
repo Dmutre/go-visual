@@ -1,6 +1,7 @@
 package lang
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -54,6 +55,7 @@ func TestParser_CommandParser(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			fmt.Println(test.commandName)
 			result := p.CommandParser(test.commandName, test.args)
 			if result == nil {
 				t.Errorf("Expected non-nil result for command %s", test.commandName)
